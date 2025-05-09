@@ -1,0 +1,96 @@
+
+.roboto-condensed-light {
+  font-family: "Roboto Condensed", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.roboto-condensed-regular {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.roboto-condensed-bold {
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 900;
+    font-style: normal;
+  }
+
+.simple-temperature-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.simple-temperature-container p {
+    margin: 2px 0;
+  }
+
+.temperature {
+    font-size: 45px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 900;
+    font-style: normal;
+}
+
+.feels-like {
+    font-size: 20px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.simple-info-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.simple-info-element {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.simple-info-label {
+    font-size: 18px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.hour-scroll-container {
+    display: flex;
+    overflow-x: auto; /* enables horizontal scrolling */
+    gap: 16px;
+    padding: 10px;
+  }
+  
+.hour {
+    flex: 0 0 auto;
+    flex-direction: column;
+    width: 100px;
+    height: 165px;
+    background-color: #ccc;
+    text-align: center;
+    line-height: 100px;
+    border-radius: 8px;
+  }
+
+.hour span {
+    font-size: 18px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 4500;
+    font-style: normal;
+    display: block;
+}
