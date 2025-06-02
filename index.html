@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/be7c3080a1.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./style.css">
     <title>IsWeatherGood</title>
 </head>
 <body>
-    <div class="simple-temperature-container">
-        <p class="temperature">18°C</p>
-        <p class="feels-like">Føles som 17°C</p>
+    <div id="container">
+        <div id="forecast-container"></div>
+        <div id="main-container">
+            <div id="current-information">
+                <div class="current-information-wrapper">
+                    <h1 id="current-city">Oslo</h1>
+                    <h1 id="current-degrees">-°C</h1>
+                    <h3>(-°C / -°C)</h3>
+                    <h1 id="feels-like">Feels Like: -°C</h1>
+                    <div id="current-information-icons">
+                        <div class="current-information-icon">
+                            <i class="fa-regular fa-sun"></i>
+                            <h3>- (UV)</h3>
+                        </div>
+                        <div class="current-information-icon">
+                            <i class="fa-regular fa-wind"></i>
+                            <h3>- m/s</h3>
+                        </div>
+                        <div class="current-information-icon">
+                            <i class="fa-regular fa-umbrella"></i>
+                            <h3>- mm</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="simple-info-container">
-        <div class="simple-info-element">
-            <img src="illustrations/wind-vec.jpg" height = 100px>
-            <p class="simple-info-label">10 m/s</p>
-        </div>
-        <div class="simple-info-element">
-            <img src="illustrations/humidity-vec.svg" height = 70px>
-            <p class="simple-info-label">3 mm</p>
-        </div>
-        <div class="simple-info-element">
-            <img src="illustrations/sun-vec.jpg" height = 90px>
-            <p class="simple-info-label">10 m/s</p>
-        </div>
-    </div>
-
-    <div class="hour-scroll-container" id="hourContainer"></div>
-
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
 </body>
 </html>
