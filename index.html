@@ -4,31 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/be7c3080a1.js" crossorigin="anonymous"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCw_5qlWP08AVukO731WNQkHzuv-cR6A1s&libraries=places"></script>
     <link rel="stylesheet" href="./style.css">
     <title>IsWeatherGood</title>
 </head>
 <body>
     <div id="container">
+        <video autoplay muted loop playsinline class="bg-video">
+                <source src="assets/clouds.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+        </video>
         <div id="forecast-container"></div>
+        <div id="search-bar-container">
+            <input id="search-input" type="text" placeholder="Search for a place..."></input>
+            <button id="clear-btn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
         <div id="main-container">
+            
+
             <div id="current-information">
                 <div class="current-information-wrapper">
                     <h1 id="current-city">Oslo</h1>
                     <h1 id="current-degrees">-°C</h1>
-                    <h3>(-°C / -°C)</h3>
                     <h1 id="feels-like">Feels Like: -°C</h1>
                     <div id="current-information-icons">
                         <div class="current-information-icon">
                             <i class="fa-regular fa-sun"></i>
-                            <h3>- (UV)</h3>
+                            <h3 id="uv">- (UV)</h3>
                         </div>
                         <div class="current-information-icon">
                             <i class="fa-regular fa-wind"></i>
-                            <h3>- m/s</h3>
+                            <h3 id="ms">- m/s</h3>
                         </div>
                         <div class="current-information-icon">
                             <i class="fa-regular fa-umbrella"></i>
-                            <h3>- mm</h3>
+                            <h3 id="mm">- mm</h3>
                         </div>
                     </div>
                 </div>
