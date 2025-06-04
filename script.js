@@ -112,7 +112,7 @@ function createForecastCard(amount = 7) {
             const containerCenterX = containerRect.left + containerRect.width / 2;
 
             const distanceFromCenter = containerCenterX - cardCenterX;
-            const translateX = distanceFromCenter * 0.02; // Tune factor for smoothness
+            const translateX = distanceFromCenter * 0.02;
 
             card.style.transform = `scale(1.15) translateX(${translateX}px)`;
             card.style.zIndex = 10;
@@ -120,12 +120,13 @@ function createForecastCard(amount = 7) {
 
         card.addEventListener('mouseleave', () => {
             card.style.transform = '';
-            card.style.zIndex = '';
+            card.style.zIndex = 'auto';
         });
     }
 }
 
-async function fetchCurrentWeather(cityName = "Oslo") {
+// Main Information
+async function fetchCurrentWeather(cityName = "Oslo, NO") {
     try {
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
             cityName
@@ -162,14 +163,16 @@ async function fetchCurrentWeather(cityName = "Oslo") {
         ms.textContent = `${(+data.wind.speed).toFixed(1)} m/s`;
         mm.textContent = `${precipitation.toFixed(1)} mm`;
 
-        console.log(data);
+        logData = false;
+        console.log(logData ? data : "^ Ignore Errors ^");
     } catch (err) {
         alert(err.message);
         console.error(err);
     }
 }
 
-async function fetch3hourForecast(cityName = "Oslo") {
+// Next Few Days Forecast
+async function fetch3hourForecast(cityName = "Oslo, NO") {
     try {
         const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(
             cityName
@@ -214,17 +217,16 @@ async function fetch3hourForecast(cityName = "Oslo") {
             } else if (slot.snow && slot.snow["3h"] !== undefined) {
                 precip3h = slot.snow["3h"];
             }
-
-            
         }
     } catch (err) {
         console.error("Error fetching 3-hour forecast:", err);
     }
 }
 
+// Autocomplete Search Bar
 function initAutocomplete() {
     let autocomplete = new google.maps.places.Autocomplete(searchBarInput, {
-      types: ["(cities)"],
+        types: ["(cities)"],
     });
 
     autocomplete.addListener("place_changed", () => {
@@ -233,12 +235,21 @@ function initAutocomplete() {
             alert("No details available for input: '" + place.name + "'");
             return;
         }
-
-        fetchCurrentWeather(place.name);
-
-      // Send these coordinates to your weather API
+        
+        const countryComponent = place.address_components.find(component => component.types.includes("country"));
+        const country = countryComponent ? countryComponent.short_name : "";
+        fetchCurrentWeather(`${place.name}, ${country}`);
     });
 }
 
 window.onload = initAutocomplete;
 
+searchBarInput.addEventListener("keydown", (k) => {
+    if (k.key === "Enter") {
+        const cityName = searchBarInput.value.trim();
+        if (cityName) {
+            fetchCurrentWeather(cityName);
+            fetch3hourForecast(cityName);
+        }
+    }
+});
