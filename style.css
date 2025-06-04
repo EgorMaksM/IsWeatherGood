@@ -50,6 +50,7 @@ body {
 }
 
 .forecast-card {
+    margin-top: 12px;
     background-color: white;
     position: relative;
     min-width: clamp(200px, 30%, 225px);
@@ -124,6 +125,7 @@ body {
     font-size: 1.7rem;
     box-sizing: border-box;
     font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 #clear-btn {
@@ -141,14 +143,13 @@ body {
 }
 
 #clear-btn:hover {
-    background: rgb(221, 221, 221);
     color: #000000;
-    box-shadow: 0 0px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0px 10px rgba(0, 0, 0, 0.4);
 }
 
 #clear-btn:active {
-    background: rgb(199, 199, 199);
     transform: scale(0.9);
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.4);
 }
 
 .fa-xmark {
