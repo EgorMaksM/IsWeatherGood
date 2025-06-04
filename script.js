@@ -158,12 +158,11 @@ async function fetchCurrentWeather(cityName = "Oslo, NO") {
         } else {
             uv.textContent = `${data.main.uv} (UV)`;
         }
-
         
         ms.textContent = `${(+data.wind.speed).toFixed(1)} m/s`;
         mm.textContent = `${precipitation.toFixed(1)} mm`;
 
-        logData = false;
+        logData = true;
         console.log(logData ? data : "^ Ignore Errors ^");
     } catch (err) {
         alert(err.message);
@@ -239,6 +238,7 @@ function initAutocomplete() {
         const countryComponent = place.address_components.find(component => component.types.includes("country"));
         const country = countryComponent ? countryComponent.short_name : "";
         fetchCurrentWeather(`${place.name}, ${country}`);
+        fetch3hourForecast(`${place.name}, ${country}`);
     });
 }
 
@@ -253,3 +253,10 @@ searchBarInput.addEventListener("keydown", (k) => {
         }
     }
 });
+
+setTimeout(() => {
+    console.log(`
+    This is a free weather API from 'openweathermap.org'\n    Data may not be accurate.\n
+    UV index needs a seperate API call, which is paid for.
+    `);
+}, 1000);
