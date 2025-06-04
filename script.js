@@ -163,7 +163,7 @@ async function fetchCurrentWeather(cityName = "Oslo, NO") {
         mm.textContent = `${precipitation.toFixed(1)} mm`;
 
         logData = true;
-        console.log(logData ? data : "^ Ignore Errors ^");
+        if (logData) console.log(data);
     } catch (err) {
         alert(err.message);
         console.error(err);
@@ -258,5 +258,8 @@ setTimeout(() => {
     console.log(`
     This is a free weather API from 'openweathermap.org'\n    Data may not be accurate.\n
     UV index needs a seperate API call, which is paid for.
+    `);
+    console.log(`
+    Search API ["(cities)"] powered by Google Maps.
     `);
 }, 1000);
