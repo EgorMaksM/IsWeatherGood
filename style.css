@@ -9,6 +9,7 @@
 
 body {
     background-color: #f0f4f8;
+    overflow-y: hidden;
 }
 
 .bg-video {
@@ -42,7 +43,8 @@ body {
     gap: 10px;
     border-radius: 10px;
     box-shadow: 0 8px 6px 1px rgba(0, 0, 0, 0.3);
-    overflow: visible;
+    overflow: scroll;
+    overflow-y: visible;
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
 }
@@ -119,9 +121,9 @@ body {
     border-radius: 10px;
     background-color: #ffffff;
     opacity: 0.6;
-    font-size: 2rem;
+    font-size: 1.7rem;
     box-sizing: border-box;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 #clear-btn {
@@ -183,6 +185,7 @@ body {
 #current-information {
     position: relative;
     width: 100%;
+    transform: translateY(5%);
 }
 
 .current-information-wrapper {
