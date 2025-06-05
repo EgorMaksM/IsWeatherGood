@@ -104,7 +104,7 @@ function createForecastCard(amount = 7) {
         card.append(header, icon, information, week);
         information.append(degrees, wind);
 
-        card.addEventListener('mouseenter', () => {
+        card.addEventListener('mouseenter', () => {            
             const cardRect = card.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
 
