@@ -125,6 +125,14 @@ function createForecastCard(amount = 7) {
     }
 }
 
+function countryCodeToFlagEmoji(countryCode) {
+  return countryCode
+    .toUpperCase()
+    .replace(/./g, char => 
+      String.fromCodePoint(127397 + char.charCodeAt())
+    );
+}
+
 // Main Information
 async function fetchCurrentWeather(cityName = "Oslo, NO") {
     try {
@@ -138,7 +146,8 @@ async function fetchCurrentWeather(cityName = "Oslo, NO") {
         }
 
         const data = await response.json();
-        currentCityEl.innerHTML = `${data.name}<span>${data.sys.country}</span>`;
+        const flagEmoji = countryCodeToFlagEmoji(data.sys.country);
+        currentCityEl.innerHTML = `${data.name}<span>${data.sys.country}${flagEmoji}</span> `;
         currentDegreesEl.textContent = `${(+data.main.temp).toFixed(1)}°C`;
         feelsLikeEl.textContent = `Feels Like: ${(+data.main.feels_like).toFixed(1)}°C`;
 
