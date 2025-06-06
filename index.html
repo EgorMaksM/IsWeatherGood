@@ -4,55 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/be7c3080a1.js" crossorigin="anonymous"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCw_5qlWP08AVukO731WNQkHzuv-cR6A1s&libraries=places"></script>
     <link rel="stylesheet" href="./style.css">
-    <title>IsWeatherGood</title>
+    <title>Credits - IsWeatherGood</title>
 </head>
 <body>
-    <video id="bg-video" autoplay muted loop playsinline></video>
-    <video id="bg-video-overlay" autoplay muted loop playsinline></video>
-
-    <video id="preload-cloudy" src="assets/cloudy.mp4" preload="auto" style="display: none;"></video>
-    <video id="preload-sunny"  src="assets/sunny.mp4"  preload="auto" style="display: none;"></video>
-    <video id="preload-rain"   src="assets/rain.mp4"   preload="auto" style="display: none;"></video>
-    <video id="preload-snow"   src="assets/snow.mp4"   preload="auto" style="display: none;"></video>
     <div id="container">
-        <div id="forecast-container"></div>
-        <div id="search-bar-container">
-            <input id="search-input" type="text" placeholder="Search for a place..."></input>
-            <button id="clear-btn">
-                <i class="fa-solid fa-xmark" class="xmark"></i>
-            </button>
+        <div id="header">CREDITS</div>
+        <div>
+            <h2>YEHOR</h2>
         </div>
-        <div id="main-container">
 
-            <div id="current-information">
+        <div>
+            <h2>EMIIL</h2>
+        </div>
+        
+        <div id="credit-yehor">
+            <h2 id="credit-yehor-header">
+                YEHOR
+            </h2>
+            <button id="credit-yehor-x">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="credit-info">
+                <ul>
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>JS</li>
+                </ul>
+            </div>
+        </div>
 
-                <div class="current-information-wrapper">
-                    
-                    <h1 id="current-city">Oslo</h1>
-                    <h1 id="current-degrees">-°C</h1>
-                    <h1 id="feels-like">Feels Like: -°C</h1>
-                    <div id="current-information-icons">
-                        <div class="current-information-icon">
-                            <i class="fa-regular fa-sun"></i>
-                            <h3 id="uv">- (UV)</h3>
-                        </div>
-                        <div class="current-information-icon">
-                            <i class="fa-regular fa-wind"></i>
-                            <h3 id="ms">- m/s</h3>
-                        </div>
-                        <div class="current-information-icon">
-                            <i class="fa-regular fa-umbrella"></i>
-                            <h3 id="mm">- mm</h3>
-                        </div>
-                    </div>
-                </div>
+        <div id="credit-emiil">
+            <h2 id="credit-emiil-header">
+                EMIIL
+            </h2>
+            <button id="credit-emiil-x">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="credit-info">
+                <ul>
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>JS</li>
+                </ul>
             </div>
         </div>
     </div>
+    <footer>
+        <p>
+            &copy; 2025 IsWeatherGood. All Rights Reserved
+        </p>
+    </footer>
     <script src="./script.js"></script>
+    <button id="home-button" onclick="loadHomePage()">Home</button>
 </body>
 </html>
-
-<button id="credits-button" onclick="loadCreditsPage()">Credits</button>
