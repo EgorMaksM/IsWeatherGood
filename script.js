@@ -42,6 +42,13 @@ const weatherIcons = {
     umbrella: `fa-regular fa-umbrella`,
 };
 
+const preloadVideos = {
+  cloudy: document.getElementById("preload-cloudy"),
+  sunny: document.getElementById("preload-sunny"),
+  rain: document.getElementById("preload-rain"),
+  snow: document.getElementById("preload-snow")
+};
+
 main();
 function main() {
     searchClearBtn.addEventListener('click', () => {
@@ -49,8 +56,6 @@ function main() {
         searchBarInput.focus();
     });
     createForecastCard();
-    fetchWeatherData();
-    fetch3hourForecast();
 }
 
 function getWeekNumber(d) {
@@ -64,12 +69,37 @@ function getWeekNumber(d) {
 
 // ALWAYS fetch either currentWeather, 3hourForecast, or both afterwards MANUALLY!
 function updateURL(location, date = null) {
-    const params = new URLSearchParams();
-    params.set("location", location);
-    if (date) params.set("date", date);
+    const newUrl = `${window.location.pathname}?location=${encodeURIComponent(location)}&date=${encodeURIComponent(date)}`;
+    history.pushState({}, "", newUrl);
+}
 
-    const newURL = `${window.location.pathname}?${params.toString()}`;
-    window.history.pushState({}, '', newURL);
+function changeBackground(videoElement, newSrc) {    
+    if (videoElement.getAttribute("data-src") === newSrc) return;
+
+    const clone = videoElement.cloneNode(true);
+    clone.src = newSrc;
+    clone.autoplay = true;
+    clone.loop = true;
+    clone.muted = true;
+    clone.style.opacity = 0;
+    clone.setAttribute("data-src", newSrc);
+    
+    videoElement.parentNode.insertBefore(clone, videoElement);
+    
+    clone.addEventListener("canplay", () => {
+        requestAnimationFrame(() => {
+            clone.style.transition = "opacity 0.5s ease";
+            clone.style.opacity = 1;
+
+            setTimeout(() => {
+                if (videoElement && videoElement.parentNode) {
+                    videoElement.remove();
+                }
+            }, 500);
+        });
+    });
+
+    clone.load();
 }
 
 function createForecastCard(amount = 7) {
@@ -138,7 +168,7 @@ function createForecastCard(amount = 7) {
             const location = params.get("location") || "Arendal";
             const date = card.dataset.date;
             updateURL(location, date);
-            fetchWeatherData(location)
+            fetchWeatherData(location);
             highlightCardForDate(date);
         });
 
@@ -211,23 +241,24 @@ async function fetchWeatherData(cityName = "Arendal, NO", targetDate = null) {
 
         // Background video set-up
         if (condition.includes("rain") || condition.includes("thunderstorm")) {
-            backgroundVideo.src = "assets/cloudy.mp4";
             backgroundVideoOverlay.style.display = "block";
-            backgroundVideoOverlay.src = "assets/rain.mp4";
+            changeBackground(backgroundVideo, preloadVideos.cloudy.src);
+            changeBackground(backgroundVideoOverlay, preloadVideos.rain.src);
         } else if (condition.includes("snow")) {
-            backgroundVideo.src = "assets/cloudy.mp4";
             backgroundVideoOverlay.style.display = "block";
-            backgroundVideoOverlay.src = "assets/snow.mp4";
+            changeBackground(backgroundVideo, preloadVideos.cloudy.src);
+            changeBackground(backgroundVideoOverlay, preloadVideos.snow.src);
         } else if (condition.includes("cloud") || condition.includes("drizzle")) {
-            backgroundVideo.src = "assets/cloudy.mp4";
+            backgroundVideoOverlay.style.display = "none";
+            changeBackground(backgroundVideo, preloadVideos.cloudy.src);
         } else if (condition.includes("clear") || condition.includes("sun")) {
-            backgroundVideo.src = "assets/sunny.mp4";
+            backgroundVideoOverlay.style.display = "none";
+            changeBackground(backgroundVideo, preloadVideos.sunny.src);
         } else {
-            backgroundVideo.src = "assets/sunny.mp4";
-        }
+            backgroundVideoOverlay.style.display = "none";
+            changeBackground(backgroundVideo, preloadVideos.sunny.src);
+}
 
-        backgroundVideo.load();
-        backgroundVideoOverlay.load();
 
         const uv = document.getElementById("uv");
         const ms = document.getElementById("ms");

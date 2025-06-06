@@ -9,8 +9,13 @@
     <title>IsWeatherGood</title>
 </head>
 <body>
-    <video autoplay muted loop playsinline id="bg-video"></video>
-    <video autoplay muted loop playsinline id="bg-video-overlay"></video>
+    <video id="bg-video" autoplay muted loop playsinline></video>
+    <video id="bg-video-overlay" autoplay muted loop playsinline></video>
+
+    <video id="preload-cloudy" src="assets/cloudy.mp4" preload="auto" style="display: none;"></video>
+    <video id="preload-sunny"  src="assets/sunny.mp4"  preload="auto" style="display: none;"></video>
+    <video id="preload-rain"   src="assets/rain.mp4"   preload="auto" style="display: none;"></video>
+    <video id="preload-snow"   src="assets/snow.mp4"   preload="auto" style="display: none;"></video>
     <div id="container">
         <div id="forecast-container"></div>
         <div id="search-bar-container">
