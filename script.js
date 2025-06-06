@@ -84,7 +84,11 @@ function changeBackground(videoElement, newSrc) {
     clone.style.opacity = 0;
     clone.setAttribute("data-src", newSrc);
     
-    videoElement.parentNode.insertBefore(clone, videoElement);
+    try {
+        videoElement.parentNode.insertBefore(clone, videoElement);
+    } catch (err) {
+        console.log(err);
+    }
     
     clone.addEventListener("canplay", () => {
         requestAnimationFrame(() => {
@@ -229,7 +233,7 @@ async function fetchWeatherData(cityName = "Arendal, NO", targetDate = null) {
         const country = isForecast ? data.city.country : data.sys.country;
         const flagEmoji = countryCodeToFlagEmoji(country);
 
-        currentCityEl.innerHTML = `${city}<span>${country}${flagEmoji}</span> `;
+        currentCityEl.innerHTML = `${city}<span>${flagEmoji}</span> `;
 
         const temp = weatherData.main.temp;
         const feelsLike = weatherData.main.feels_like;
@@ -395,3 +399,7 @@ setTimeout(() => {
     Search API ["(cities)"] powered by Google Maps.
     `);
 }, 1000);
+
+function loadCreditsPage() {
+    document.location.href = "http://127.0.0.1:3000/credits/index.html";
+}
