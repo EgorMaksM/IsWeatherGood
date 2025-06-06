@@ -94,27 +94,17 @@ function changeBackground(videoElementId, newSrc) {
 
     if (videoElement.getAttribute("data-src") === newSrc) return;
 
-    const clone = videoElement.cloneNode(true);
+    let clone = videoElement.cloneNode(true);
     clone.src = newSrc;
     clone.setAttribute("data-src", newSrc);
-    clone.style.opacity = 0;
+    clone.setAttribute("src", newSrc);
+    clone.style.opacity = 1;
+    backgroundVideoOverlay.play();
 
     parent.insertBefore(clone, videoElement);
 
-    clone.addEventListener("canplay", () => {
-        requestAnimationFrame(() => {
-            clone.style.transition = "opacity 0.5s ease";
-            clone.style.opacity = 1;
-
-            setTimeout(() => {
-                if (videoElement.parentNode) {
-                    videoElement.remove();
-                }
-            }, 500);
-        });
-    });
-
     clone.load();
+    console.log("bg changed");
 }
 
 function stopOverlayVideo() {
@@ -122,15 +112,15 @@ function stopOverlayVideo() {
     backgroundVideoOverlay.style.pointerEvents = "none";
     backgroundVideoOverlay.style.zIndex = -3;
 
-    backgroundVideoOverlay.style.transition = "opacity 0.5s ease";
-    backgroundVideoOverlay.style.opacity = 0;
-
     setTimeout(() => {
         backgroundVideoOverlay.pause();
         backgroundVideoOverlay.removeAttribute("src");
+        backgroundVideoOverlay.removeAttribute("data-src");
         backgroundVideoOverlay.load();
+        console.log(backgroundVideoOverlay.outerHTML);
         backgroundVideoOverlay.style.display = "none";
     }, 500);
+    console.log("src deleted");
 }
 
 function createForecastCard(amount = 6) {
@@ -274,11 +264,13 @@ async function fetchWeatherData(cityName = "Arendal, NO", targetDate = null) {
         // Background video set-up
         if (condition.includes("rain") || condition.includes("thunderstorm")) {
             console.log("rainy");
+            const backgroundVideoOverlay = document.getElementById("bg-video-overlay");
             backgroundVideoOverlay.style.zIndex = -1;
             backgroundVideoOverlay.style.display = "block";
             changeBackground("bg-video-overlay", preloadVideos.rain.src);
         } else if (condition.includes("snow")) {
             console.log("snowy");
+            const backgroundVideoOverlay = document.getElementById("bg-video-overlay");
             backgroundVideoOverlay.style.zIndex = -1;
             backgroundVideoOverlay.style.display = "block";
             changeBackground("bg-video-overlay", preloadVideos.snow.src);
@@ -409,8 +401,20 @@ searchBarInput.addEventListener("keydown", (k) => {
 });
 
 window.addEventListener('load', () => {
+    let geolocation;
+    fetch("https://ipapi.co/json/")
+    .then(response => response.json())
+    .then(data => {
+      gelocation = data.city;
+      console.log("Detected city:", geolocation);
+    })
+    .catch(error => {
+      console.error("Failed to get location:", error);
+      changeBackgroundByCity("Oslo");
+    });
+
     const params = new URLSearchParams(window.location.search);
-    const location = params.get("location") || "Arendal";
+    const location = params.get("location") || geolocation;
     const date = params.get("date");
 
     fetchWeatherData(location, date);
