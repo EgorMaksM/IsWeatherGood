@@ -1,5 +1,7 @@
 const OPENWEATHER_API_KEY = "02935cddc892cbbc45a189ecc523152c";
 
+const backgroundVideo         = document.getElementById("bg-video");
+const backgroundVideoOverlay  = document.getElementById("bg-video-overlay");
 const forecastContainer       = document.getElementById("forecast-container");
 const searchBarInput          = document.getElementById("search-input");
 const searchClearBtn          = document.getElementById("clear-btn");
@@ -47,7 +49,7 @@ function main() {
         searchBarInput.focus();
     });
     createForecastCard();
-    fetchCurrentWeather();
+    fetchWeatherData();
     fetch3hourForecast();
 }
 
@@ -60,6 +62,16 @@ function getWeekNumber(d) {
     return 1 + Math.round(diff / (7 * 24 * 60 * 60 * 1000));
 }
 
+// ALWAYS fetch either currentWeather, 3hourForecast, or both afterwards MANUALLY!
+function updateURL(location, date = null) {
+    const params = new URLSearchParams();
+    params.set("location", location);
+    if (date) params.set("date", date);
+
+    const newURL = `${window.location.pathname}?${params.toString()}`;
+    window.history.pushState({}, '', newURL);
+}
+
 function createForecastCard(amount = 7) {
     forecastContainer.innerHTML = "";
     const today = new Date();
@@ -68,6 +80,8 @@ function createForecastCard(amount = 7) {
         const date = new Date(today);
         date.setDate(today.getDate() + i);
 
+        const isoDate = date.toLocaleDateString('sv-SE');
+
         const weekNumber = getWeekNumber(date);
         const jsDay = date.getDay();
         const weekdayIndex = jsDay === 0 ? 6 : jsDay - 1;
@@ -75,6 +89,7 @@ function createForecastCard(amount = 7) {
         const card = document.createElement("div");
         card.id = `forecast-card-${i + 1}`;
         card.classList.add("forecast-card");
+        card.dataset.date = isoDate;
 
         const header = document.createElement("h3");
         header.classList.add("forecast-card-header");
@@ -118,11 +133,34 @@ function createForecastCard(amount = 7) {
             card.style.zIndex = 10;
         });
 
+        card.addEventListener("click", () => {
+            const params = new URLSearchParams(window.location.search);
+            const location = params.get("location") || "Arendal";
+            const date = card.dataset.date;
+            updateURL(location, date);
+            fetchWeatherData(location)
+            highlightCardForDate(date);
+        });
+
         card.addEventListener('mouseleave', () => {
             card.style.transform = '';
             card.style.zIndex = 'auto';
         });
     }
+}
+
+function highlightCardForDate(dateString = null) {
+    // Current date if not specified
+    if (dateString == null) {
+        dateString = new Date();
+    }
+    document.querySelectorAll(".forecast-card").forEach((card) => {
+        if (card.dataset.date === dateString) {
+            card.classList.add("selected");
+        } else {
+            card.classList.remove("selected");
+        }
+    });
 }
 
 function countryCodeToFlagEmoji(countryCode) {
@@ -134,45 +172,84 @@ function countryCodeToFlagEmoji(countryCode) {
 }
 
 // Main Information
-async function fetchCurrentWeather(cityName = "Oslo, NO") {
+async function fetchWeatherData(cityName = "Arendal, NO", targetDate = null) {
     try {
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-            cityName
-        )}&units=metric&appid=${OPENWEATHER_API_KEY}`;
+        const isForecast = Boolean(targetDate);
+        const encodedCity = encodeURIComponent(cityName);
+
+        const url = isForecast
+            ? `https://api.openweathermap.org/data/2.5/forecast?q=${encodedCity}&units=metric&appid=${OPENWEATHER_API_KEY}`
+            : `https://api.openweathermap.org/data/2.5/weather?q=${encodedCity}&units=metric&appid=${OPENWEATHER_API_KEY}`;
 
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("Could not fetch data...");
-        }
+        if (!response.ok) throw new Error("Could not fetch data...");
 
         const data = await response.json();
-        const flagEmoji = countryCodeToFlagEmoji(data.sys.country);
-        currentCityEl.innerHTML = `${data.name}<span>${data.sys.country}${flagEmoji}</span> `;
-        currentDegreesEl.textContent = `${(+data.main.temp).toFixed(1)}°C`;
-        feelsLikeEl.textContent = `Feels Like: ${(+data.main.feels_like).toFixed(1)}°C`;
+
+        const weatherData = isForecast
+            ? (() => {
+                const dateStr = new Date(targetDate).toISOString().split("T")[0];
+                const match = data.list.find(item => item.dt_txt.startsWith(dateStr));
+                if (!match) throw new Error("No forecast available for this date.");
+                return match;
+            })()
+            : data;
+
+        const city = isForecast ? data.city.name : data.name;
+        const country = isForecast ? data.city.country : data.sys.country;
+        const flagEmoji = countryCodeToFlagEmoji(country);
+
+        currentCityEl.innerHTML = `${city}<span>${country}${flagEmoji}</span> `;
+
+        const temp = weatherData.main.temp;
+        const feelsLike = weatherData.main.feels_like;
+        currentDegreesEl.textContent = `${(+temp).toFixed(1)}°C`;
+        feelsLikeEl.textContent = `Feels Like: ${(+feelsLike).toFixed(1)}°C`;
+
+        const condition = weatherData.weather[0].main.toLowerCase();
+        backgroundVideoOverlay.style.display = "none";
+
+        // Background video set-up
+        if (condition.includes("rain") || condition.includes("thunderstorm")) {
+            backgroundVideo.src = "assets/cloudy.mp4";
+            backgroundVideoOverlay.style.display = "block";
+            backgroundVideoOverlay.src = "assets/rain.mp4";
+        } else if (condition.includes("snow")) {
+            backgroundVideo.src = "assets/cloudy.mp4";
+            backgroundVideoOverlay.style.display = "block";
+            backgroundVideoOverlay.src = "assets/snow.mp4";
+        } else if (condition.includes("cloud") || condition.includes("drizzle")) {
+            backgroundVideo.src = "assets/cloudy.mp4";
+        } else if (condition.includes("clear") || condition.includes("sun")) {
+            backgroundVideo.src = "assets/sunny.mp4";
+        } else {
+            backgroundVideo.src = "assets/sunny.mp4";
+        }
+
+        backgroundVideo.load();
+        backgroundVideoOverlay.load();
 
         const uv = document.getElementById("uv");
         const ms = document.getElementById("ms");
         const mm = document.getElementById("mm");
 
         let precipitation = 0;
-        if (data.rain && data.rain["1h"] !== undefined) {
-            precipitation = data.rain["1h"];
-        } else if (data.snow && data.snow["1h"] !== undefined) {
-            precipitation = data.snow["1h"];
+        if (weatherData.rain && weatherData.rain["3h"] !== undefined) {
+            precipitation = weatherData.rain["3h"];
+        } else if (weatherData.snow && weatherData.snow["3h"] !== undefined) {
+            precipitation = weatherData.snow["3h"];
         }
 
-        if (data.main.uv === undefined) {
-            uv.textContent = "N/A (UV)"
+        if (!weatherData.uvi && !weatherData.main.uvi) {
+            uv.textContent = "N/A (UV)";
         } else {
-            uv.textContent = `${data.main.uv} (UV)`;
+            const uvi = weatherData.uvi ?? weatherData.main.uvi;
+            uv.textContent = `${uvi} (UV)`;
         }
-        
-        ms.textContent = `${(+data.wind.speed).toFixed(1)} m/s`;
-        mm.textContent = `${precipitation.toFixed(1)} mm`;
 
-        logData = true;
-        if (logData) console.log(data);
+        const windSpeed = weatherData.wind.speed;
+        ms.textContent = `${(+windSpeed).toFixed(1)} m/s`;
+        mm.textContent = `${precipitation.toFixed(1)} mm`;
     } catch (err) {
         alert(err.message);
         console.error(err);
@@ -180,7 +257,7 @@ async function fetchCurrentWeather(cityName = "Oslo, NO") {
 }
 
 // Next Few Days Forecast
-async function fetch3hourForecast(cityName = "Oslo, NO") {
+async function fetch3hourForecast(cityName = "Arendal, NO") {
     try {
         const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(
             cityName
@@ -246,8 +323,12 @@ function initAutocomplete() {
         
         const countryComponent = place.address_components.find(component => component.types.includes("country"));
         const country = countryComponent ? countryComponent.short_name : "";
-        fetchCurrentWeather(`${place.name}, ${country}`);
-        fetch3hourForecast(`${place.name}, ${country}`);
+
+        const location = `${place.name}, ${country}`;
+        updateURL(location, null);
+
+        fetchWeatherData(location);
+        fetch3hourForecast(location);
     });
 }
 
@@ -257,10 +338,21 @@ searchBarInput.addEventListener("keydown", (k) => {
     if (k.key === "Enter") {
         const cityName = searchBarInput.value.trim();
         if (cityName) {
-            fetchCurrentWeather(cityName);
+            updateURL(cityName, null);
+            fetchWeatherData(cityName);
             fetch3hourForecast(cityName);
         }
     }
+});
+
+window.addEventListener('load', () => {
+    const params = new URLSearchParams(window.location.search);
+    const location = params.get("location") || "Arendal";
+    const date = params.get("date");
+
+    fetchWeatherData(location, date);
+    fetch3hourForecast(location);
+    highlightCardForDate(date);
 });
 
 setTimeout(() => {

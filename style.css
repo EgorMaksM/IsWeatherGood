@@ -16,7 +16,7 @@ body {
     overflow-y: scroll;
 }
 
-.video1 {
+#bg-video {
     position: fixed;
     top: 0;
     left: 0;
@@ -27,7 +27,7 @@ body {
     pointer-events: none;
 }
 
-.video2 {
+#bg-video-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -82,6 +82,12 @@ body {
     cursor: pointer;
     transition: transform 0.15s ease, z-index 0.15s;
     transform-origin: center;
+}
+
+.forecast-card.selected,
+.forecast-card.selected * {
+    background-color: rgb(220, 255, 218) !important; /* light green */
+    transition: background-color 0.3s, transform 0.15s ease, z-index 0.15s;
 }
 
 .forecast-card-header {
@@ -282,7 +288,7 @@ body {
 .fa-umbrella {
     color: rgb(111, 238, 255);
     -webkit-text-stroke: 0.06rem rgb(66, 148, 255);
-    border: 0.12rem solid black;
+    border: 0.15rem solid black;
     border-bottom: none;
 }
 
