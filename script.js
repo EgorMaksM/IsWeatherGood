@@ -427,3 +427,7 @@ setTimeout(() => {
     Search API ["(cities)"] powered by Google Maps.
     `);
 }, 1000);
+
+function loadCreditsPage() {
+    document.location.href = "http://127.0.0.1:3000/credits/index.html";
+}
