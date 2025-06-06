@@ -13,6 +13,8 @@ const currentDegreesEl        = document.getElementById("current-degrees");
 const highLowEl               = document.querySelector("#main-container h3");
 const feelsLikeEl             = document.getElementById("feels-like");
 
+let geolocation;
+
 const weekdays = [
     "Monday",
     "Tuesday",
@@ -113,13 +115,22 @@ function stopOverlayVideo() {
     backgroundVideoOverlay.style.zIndex = -3;
 
     setTimeout(() => {
-        backgroundVideoOverlay.pause();
-        backgroundVideoOverlay.removeAttribute("src");
-        backgroundVideoOverlay.removeAttribute("data-src");
-        backgroundVideoOverlay.load();
-        console.log(backgroundVideoOverlay.outerHTML);
+        try {
+            // Only try stopping if the video has at least some data
+            if (backgroundVideoOverlay.readyState >= 2) {
+                backgroundVideoOverlay.pause();
+            }
+
+            backgroundVideoOverlay.removeAttribute("src");
+            backgroundVideoOverlay.removeAttribute("data-src");
+
+            backgroundVideoOverlay.load();
+        } catch (err) {
+            console.warn("stopOverlayVideo() failed:", err);
+        }
         backgroundVideoOverlay.style.display = "none";
     }, 500);
+
     console.log("src deleted");
 }
 
@@ -313,7 +324,7 @@ async function fetchWeatherData(cityName = "Arendal, NO", targetDate = null) {
 }
 
 // Next Few Days Forecast
-async function fetch3hourForecast(cityName = "Arendal, NO") {
+async function fetch3hourForecast(cityName = geolocation) {
     try {
         const url = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(
             cityName
@@ -400,26 +411,32 @@ searchBarInput.addEventListener("keydown", (k) => {
     }
 });
 
-window.addEventListener('load', () => {
-    let geolocation;
-    fetch("https://ipapi.co/json/")
-    .then(response => response.json())
-    .then(data => {
-      gelocation = data.city;
-      console.log("Detected city:", geolocation);
-    })
-    .catch(error => {
-      console.error("Failed to get location:", error);
-      changeBackgroundByCity("Oslo");
-    });
+window.addEventListener('load', async () => {
+    try {
+        const response = await fetch("https://ipapi.co/json/");
+        const data = await response.json();
+        geolocation = data.city;
+        console.log("Detected city:", geolocation);
 
-    const params = new URLSearchParams(window.location.search);
-    const location = params.get("location") || geolocation;
-    const date = params.get("date");
+        const params = new URLSearchParams(window.location.search);
+        const location = params.get("location") ? params.get("location") : geolocation;
+        const date = params.get("date");
 
-    fetchWeatherData(location, date);
-    fetch3hourForecast(location);
-    highlightCardForDate(date);
+        fetchWeatherData(location, date);
+        fetch3hourForecast(location);
+        highlightCardForDate(date);
+
+    } catch (error) {
+        console.error("Failed to get location:", error);
+
+        const params = new URLSearchParams(window.location.search);
+        const location = params.get("location") ? params.get("location") : "Arendal";
+        const date = params.get("date");
+
+        fetchWeatherData(location, date);
+        fetch3hourForecast(location);
+        highlightCardForDate(date);
+    }
 });
 
 setTimeout(() => {
